@@ -23,15 +23,18 @@ class AgendasController < ApplicationController
 
   def destroy
     @agenda = Agenda.find(params[:id])
-    if @agenda.destroy
-        redirect_to dashboard_path, notice: "削除しました。"
-        @agenda.team.members.each do |member|
-          @info = {title: @agenda.title, email: member.email}
-          NotificationMailer.delete_agenda(@info).deliver
-          binding.pry
-        end
+    if (current_user == @agenda.user) || (current_user == @agenda.team.owner)
+      if @agenda.destroy
+          redirect_to dashboard_path, notice: "削除しました。"
+          @agenda.team.members.each do |member|
+            @info = {title: @agenda.title, email: member.email}
+            NotificationMailer.delete_agenda(@info).deliver
+          end
+      else
+        render 'dashboard'
+      end
     else
-      render 'dashboard'
+      redirect_to dashboard_path, notice: '権限がありません。'
     end
   end
 
