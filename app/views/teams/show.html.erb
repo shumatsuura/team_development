@@ -47,7 +47,7 @@
                         <% end %>
                       </td>
                       <td>
-                        <% if current_user == @team.owner && assign.user != current_user %>
+                        <% if (current_user == @team.owner) && (current_user != assign.user) %>
                           <%= form_with model: @team, local: true, url: change_owner_team_path do |form| %>
                             <%= form.hidden_field :name %>
                             <%= form.hidden_field :icon %>
