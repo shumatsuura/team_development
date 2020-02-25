@@ -15,9 +15,26 @@ class AgendasController < ApplicationController
     @agenda.team = Team.friendly.find(params[:team_id])
     current_user.keep_team_id = @agenda.team.id
     if current_user.save && @agenda.save
-      redirect_to dashboard_url, notice: I18n.t('views.messages.create_agenda') 
+      redirect_to dashboard_url, notice: I18n.t('views.messages.create_agenda')
     else
       render :new
+    end
+  end
+
+  def destroy
+    @agenda = Agenda.find(params[:id])
+    if (current_user == @agenda.user) || (current_user == @agenda.team.owner)
+      if @agenda.destroy
+          redirect_to dashboard_path, notice: "削除しました。"
+          @agenda.team.members.each do |member|
+            @info = {title: @agenda.title, email: member.email}
+            NotificationMailer.delete_agenda(@info).deliver
+          end
+      else
+        render 'dashboard'
+      end
+    else
+      redirect_to dashboard_path, notice: '権限がありません。'
     end
   end
 
