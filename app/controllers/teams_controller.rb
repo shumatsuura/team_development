@@ -15,7 +15,11 @@ class TeamsController < ApplicationController
     @team = Team.new
   end
 
-  def edit; end
+  def edit
+    unless current_user == @team.owner
+      redirect_to dashboard_path, notice: '権限がありません。'
+    end
+  end
 
   def create
     @team = Team.new(team_params)
