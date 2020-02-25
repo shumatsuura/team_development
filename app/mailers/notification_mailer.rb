@@ -4,4 +4,9 @@ class NotificationMailer < ApplicationMailer
 
     mail to: @info[:email], subject: "通知メール"
   end
+  def change_owner_mail(team)
+    @team = team
+
+    mail to: @team.owner.email, subject: "通知メール"
+  end
 end

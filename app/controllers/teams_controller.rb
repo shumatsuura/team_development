@@ -52,9 +52,9 @@ class TeamsController < ApplicationController
   end
 
   def change_owner
-    binding.pry
     if current_user == @team.owner
       @team.update(team_params)
+      NotificationMailer.change_owner_mail(@team).deliver
     end
     redirect_to team_path(@team.id)
   end
